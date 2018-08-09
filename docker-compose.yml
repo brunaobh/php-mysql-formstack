@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+   formstack_db:
+      ports:
+          - "33021:3306"
+      image: mysql:5.7
+      restart: "no"
+      environment:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: formstack
+          MYSQL_USER: formstack
+          MYSQL_PASSWORD: secret
+
+   formstack_php:
+      restart: "no"
+      build: .
+      ports: ["8021:80"]
+      links:
+          - formstack_db
+      volumes:
+          - ./:/var/www/html
+      working_dir: /var/www/html
+
+volumes:
+    central_perk_data:
+
+networks:
+    default:
+        external:
+            name: "intranet"
