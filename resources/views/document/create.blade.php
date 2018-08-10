@@ -4,11 +4,15 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>Create new document</title>
 
     <!-- CSS -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+    <!-- JS -->
+    <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
 
     <!-- Styles -->
     <style>
@@ -148,35 +152,91 @@
             </div>
           </div>
 
+          <script type="text/javascript">
+
+                  $(document).ready(function() {
+                      checkRemove()
+                      //here first get the contents of the div with name class copy-fields and add it to after "after-add-more" div class.
+                      $(".add-more").click(function(){
+                          console.log('sad');
+                          // var $newEntry =  $('div.after-add-more:last').after($('div.after-add-more:first').clone());
+                          var $newEntry = $("div.after-add-more:last").clone(true);
+
+                          $newEntry.find('input').each(function() {
+                              var $this = $(this);
+                              $this.attr('id', $this.attr('id').replace(/_(\d+)_/, function($0, $1) {
+                                  return '_' + (+$1 + 1) + '_';
+                              }));
+                              $this.attr('name', $this.attr('name').replace(/\[(\d+)\]/, function($0, $1) {
+                                  return '[' + (+$1 + 1) + ']';
+                              }));
+                              $this.val('');
+                          });
+                          $newEntry.find('select').each(function() {
+                              var $this = $(this);
+                              $this.attr('id', $this.attr('id').replace(/_(\d+)_/, function($0, $1) {
+                                  return '_' + (+$1 + 1) + '_';
+                              }));
+                              $this.attr('name', $this.attr('name').replace(/\[(\d+)\]/, function($0, $1) {
+                                  return '[' + (+$1 + 1) + ']';
+                              }));
+                          });
+                          $newEntry.insertAfter('div.after-add-more:last:last');
+                          checkRemove()
+                      });
+                      
+                      //here it will remove the current value of the remove button which has been pressed
+                      $("body").on("click",".remove",function(){
+                          $('div.after-add-more:last').remove();
+                          checkRemove()
+                      });
+                  });
+
+                  function checkRemove() {
+                      if ($('div.after-add-more').length == 1) {
+                          $('button.remove:last').hide();
+                      } else {
+                          $('button.remove:last').show();
+                      }
+                  };
+          </script>
+
           <div class="col-12">
             <form class="needs-validation" method="POST" action="{{ URL::to('/documents') }}" novalidate>
               {{ csrf_field() }}
-              <div class="row">
+              <div class="row after-add-more">
                 <div class="col-md-4 mb-3">
                   <label for="firstName">Key</label>
-                  <input type="text" class="form-control" name="document[0][key]" placeholder="" value="" required>
+                  <input type="text" class="form-control" name="document[0][key]" id="doc_0_key" placeholder="" value="" required>
                   <div class="invalid-feedback">
                     Valid first name is required.
                   </div>
                 </div>
                 <div class="col-md-4 mb-3">
                   <label for="country">Type</label>
-                  <select class="custom-select d-block w-100" name="document[0][type]" required>
-                    <option selected="">String</option>
-                    <option>Number</option>
-                    <option>Date</option>
+                  <select class="custom-select d-block w-100" name="document[0][type]" id="doc_0_type" required>
+                    <option value="string" selected="">String</option>
+                    <option value="number">Number</option>
+                    <option value="date">Date</option>
                   </select>
                 </div>
                 <div class="col-md-4 mb-3">
                   <label for="lastName">Value</label>
-                  <input type="text" class="form-control" name="document[0][value]" placeholder="" value="" required>
+                  <input type="text" class="form-control" name="document[0][value]" id="doc_0_value" placeholder="" value="" required>
                   <div class="invalid-feedback">
                     Valid last name is required.
                   </div>
                 </div>
               </div>
+
+
+              <div class="col-md-12 mb-3">
+                <button class="btn btn-success add-more" type="button"><i class="glyphicon glyphicon-plus"></i> Add</button>
+                <button class="btn btn-danger remove" type="button"><i class="glyphicon glyphicon-remove"></i> Remove</button>
+              </div>
+
               <hr class="mb-4">
-              <button class="btn btn-primary btn-lg btn-block" type="submit">Save</button>
+              <button class="btn btn-primary btn-lg btn-block" type="button">Save</button>
             </form>
           </div>
         </main>

@@ -3,7 +3,7 @@ version: '2'
 services:
    formstack_db:
       ports:
-          - "33021:3306"
+          - "33051:3306"
       image: mysql:5.7
       restart: "no"
       environment:
@@ -15,7 +15,7 @@ services:
    formstack_php:
       restart: "no"
       build: .
-      ports: ["8021:80"]
+      ports: ["8051:80"]
       links:
           - formstack_db
       volumes:

@@ -42,7 +42,8 @@ class DocumentsController extends Controller
         $document->save();
 
         $documents = Document::all();
-        return view('index', ['documents' => $documents]);
+        \Redirect::back()->withStatus('Form submitted!');
+        // return view('index', ['documents' => $documents]);
     }
 
     /**

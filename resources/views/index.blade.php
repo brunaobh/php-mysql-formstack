@@ -16,12 +16,19 @@
     <script type="text/javascript">
       function deleteItem(id) {
           if (confirm("Are you sure?")) {
+
+              $.ajaxSetup({
+                headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+              });
+
               $.ajax({
                 url: 'documents/' + id,
                 type: 'DELETE',
                 data: "name=John&location=Boston",
                 success: function(data) {
-                  alert('Document deleted');
+                  window.location.href=window.location.href;
                 }
               });
           }
