@@ -34,6 +34,27 @@
           }
           return false;
       }
+
+      function exportDoc(id, type = 'csv') {
+          if (confirm("Are you sure?")) {
+
+              $.ajaxSetup({
+                headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+              });
+
+              $.ajax({
+                url: 'documents/' + id,
+                type: 'GET',
+                data: "format=csv",
+                success: function(data) {
+                  alert('asd');
+                }
+              });
+          }
+          return false;
+      }
     </script>
 
     <!-- Styles -->
@@ -195,8 +216,8 @@
                     <td>
                       <a class="btn btn-sm btn-outline-secondary" href="{{ url('documents/'.$document->id.'/edit') }}"'>Edit</a> 
                       <a class="btn btn-sm btn-outline-secondary" onclick='deleteItem({{ $document->id }})'>Delete</a> 
-                      <button class="btn btn-sm btn-outline-secondary">Export to CSV</button>
-                      <button class="btn btn-sm btn-outline-secondary">Export to Cloud</button>
+                      <a class="btn btn-sm btn-outline-secondary" href="{{ url('documents/'.$document->id.'?format=csv') }}"'>Export to CSV</a> 
+                      <a class="btn btn-sm btn-outline-secondary" href="{{ url('documents/'.$document->id.'?format=cloud') }}"'>Export to cloud</a>  
                     </td>
                   </tr>
                 @endforeach

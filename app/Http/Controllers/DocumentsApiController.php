@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\DocumentService;
 
-class DocumentsController extends Controller
+class DocumentsApiController extends Controller
 {
     protected $documentService;
 
@@ -21,17 +21,7 @@ class DocumentsController extends Controller
      */
     public function index()
     {
-        return $this->documentService->getAllDocuments();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('document.create');
+        return $this->documentService->index();
     }
 
     /**
@@ -42,8 +32,7 @@ class DocumentsController extends Controller
      */
     public function store(Request $request)
     {
-        $this->documentService->store($request);
-        return $this->documentService->getAllDocuments();
+        return $this->documentService->store($request);
     }
 
     /**
@@ -52,22 +41,9 @@ class DocumentsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id, Request $request)
+    public function show($id)
     {
-        return $this->documentService->export($request->format, $id);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        return view('document.edit', [
-            'data' => $this->documentService->show($id)
-        ]);
+        return $this->documentService->show($id);
     }
 
     /**
@@ -80,7 +56,6 @@ class DocumentsController extends Controller
     public function update(Request $request, $id)
     {
         $this->documentService->update($request, $id);
-        return $this->documentService->getAllDocuments();
     }
 
     /**
@@ -92,6 +67,5 @@ class DocumentsController extends Controller
     public function destroy($id)
     {
         $this->documentService->delete($id);
-        return $this->documentService->getAllDocuments();
     }
 }

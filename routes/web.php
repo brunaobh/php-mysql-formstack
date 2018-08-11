@@ -11,13 +11,5 @@
 |
 */
 
-
-// Route::get('/new', function () {
-//     return view('new');
-// })->name('new');;
-
-// Route::get('/', 'DocumentsController@index')->name('index');
-// Route::post('/new', 'DocumentsController@store');
-
 Route::get('/', 'DocumentsController@index')->name('index');
 Route::resource('documents', 'DocumentsController');

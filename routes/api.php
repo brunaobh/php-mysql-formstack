@@ -13,6 +13,14 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+// API v1
+
+
+// V1
+Route::group(['prefix' => 'v1/documents', 'namespace' => 'Api\v1'], function () { 
+	Route::get('/', 'DocumentsApiController@index');
+	Route::get('/{id}', 'DocumentsApiController@index@show');
+	Route::post('/', 'DocumentsApiController@store');
+	Route::put('/{id}', 'DocumentsApiController@update');
+	Route::delete('/{id}', 'DocumentsApiController@delete');
 });
