@@ -11,7 +11,6 @@ Use docker-compose to build the service and mongodb containers (takes a few minu
 Then start the the containers:
 
 > docker-compose up
-```
 
 ## How to use - web interface
 
