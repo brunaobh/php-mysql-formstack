@@ -2,7 +2,7 @@
 
 ## Instructions
 
-# Running locally using Docker
+## Running locally using Docker
 
 Use docker-compose to build the service and mongodb containers (takes a few minutes the first time):
 
