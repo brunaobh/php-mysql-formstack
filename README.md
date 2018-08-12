@@ -1,18 +1,29 @@
-## A web application based on PHP + MySQL stack that allows you to store a set of key/value pairs of different types (strings, numbers, dates) as documents
+A web application based on PHP + MySQL stack that allows you to store a set of key/value pairs of different types (strings, numbers, dates) as documents
 
 ## Instructions
 
-## Running locally using Docker
+### Running locally using Docker
 
-Use docker-compose to build the service and mongodb containers (takes a few minutes the first time):
-
+Use docker-compose to build the service and mysql containers (takes a few minutes the first time):
+```bash
 > docker-compose build
+```
 
 Then start the the containers:
-
+```bash
 > docker-compose up
+```
 
-## How to use - web interface
+Set laravel application:
+```bash
+> composer install --ignore-platform-reqs --prefer-dist
+> cp .env.example .env
+> chmod 777 storage/ -R
+> ./console key:generate
+> ./console migrate
+```
+
+### How to use - web interface
 
 Verify the app by navigating to your server address in your preferred browser.
 ```bash
@@ -94,4 +105,12 @@ Export document by id to a CSV file and storage in a cloud storage (s3):
 curl -X GET \
   'http://localhost:8051/public/documents/{id}?format=cloud' \
   -H 'Cache-Control: no-cache'
+```
+
+### Testing
+
+
+Then start the the containers:
+```bash
+> ./runtests
 ```
