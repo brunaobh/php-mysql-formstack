@@ -30,7 +30,7 @@ Verify the app by navigating to your server address in your preferred browser.
 http://localhost:8051/public/
 ```
 
-## How to use - RestFul Api
+### How to use - RestFul Api
 
 Store new document:
 
@@ -110,7 +110,7 @@ curl -X GET \
 ### Testing
 
 
-Then start the the containers:
+Run unit tests
 ```bash
 > ./runtests
 ```
