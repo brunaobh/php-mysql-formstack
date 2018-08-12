@@ -9,6 +9,10 @@ class DocumentsController extends Controller
 {
     protected $documentService;
 
+    /**
+     * Class contructor
+     * @param DocumentService $documentService Document handler service
+     */
     public function __construct(DocumentService $documentService)
     {
         $this->documentService = $documentService;
@@ -19,7 +23,7 @@ class DocumentsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index() : object
     {
         return $this->documentService->getAllDocuments();
     }
@@ -29,7 +33,7 @@ class DocumentsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create() : object
     {
         return view('document.create');
     }
@@ -40,7 +44,7 @@ class DocumentsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request) : object
     {
         $this->documentService->store($request);
         return $this->documentService->getAllDocuments();
@@ -52,7 +56,7 @@ class DocumentsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id, Request $request)
+    public function show(int $id, Request $request)
     {
         return $this->documentService->export($request->format, $id);
     }
@@ -63,10 +67,11 @@ class DocumentsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(int $id) : object
     {
+        $data = $this->documentService->show($id);
         return view('document.edit', [
-            'data' => $this->documentService->show($id)
+            'data' => $data->result[0]
         ]);
     }
 
@@ -77,10 +82,10 @@ class DocumentsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id) : object
     {
         $this->documentService->update($request, $id);
-        return $this->documentService->getAllDocuments();
+        return redirect()->route('index');
     }
 
     /**
@@ -89,7 +94,7 @@ class DocumentsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(int $id) : object
     {
         $this->documentService->delete($id);
         return $this->documentService->getAllDocuments();

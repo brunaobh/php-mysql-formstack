@@ -3,41 +3,117 @@
 namespace App\Services;
 
 use App\Document;
+use App\Services\ResponseService;
+use Illuminate\Http\Request;
 
 class DocumentService
 {
-    public function index()
+    /**
+     * Response service 
+     * @var pp\Services\ResponseService
+     */
+    protected $responseService;
+
+    /**
+     * Class constructor
+     */
+    public function __construct()
     {
-        return Document::all();
+        $this->responseService = new ResponseService;
     }
 
-    public function store($request)
+    /**
+     * Display a listing of the resource.
+     *
+     * @return App\Services\ResponseService
+     */
+    public function index() : ResponseService
     {
-        $document = new Document;
-        $document->title = rand();
-        $document->document = json_encode($request->document);
-        $document->save();
+        $this->responseService->addResult(Document::all());
+        return $this->responseService;
     }
 
-    public function show(int $id)
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return App\Services\ResponseService
+     */
+    public function store(Request $request) : ResponseService
     {
-        return Document::findOrFail($id);
+        $validator = \Validator::make($request->json()->all(), [
+            'document.*.key' => 'required|string',
+            'document.*.type' => 'required|string',
+            'document.*.value' => 'required|string'
+        ]);
+
+        if($validator->fails()){
+            $this->responseService->setStatus($this->responseService::status_failed);
+            $this->responseService->setCode($this->responseService::code_failed);
+            foreach ($validator->errors()->getMessages() as $item) {
+                $this->responseService->addResult($item);
+            }
+        } else {
+            $document = new Document;
+            $document->document = json_encode($request->document);
+            $document->save();
+            $this->responseService->addResult($document);
+        }
+
+        return $this->responseService;
     }
 
-    public function update($request, $id)
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return App\Services\ResponseService
+     */
+    public function show(int $id) : ResponseService
+    {
+        $document = Document::findOrFail($id);
+        $this->responseService->addResult($document);
+        return $this->responseService;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return App\Services\ResponseService
+     */
+    public function update($request, $id) : ResponseService
     {
         $document = Document::findOrFail($id);
         $document->document = json_encode($request->document);
         $document->save();
+        $this->responseService->addResult($document);
+        return $this->responseService;
     }
 
-    public function delete($id)
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return App\Services\ResponseService
+     */
+    public function delete($id) : ResponseService
     {
         $document = Document::findOrFail($id);
         $document->delete();
+
+        $this->responseService->addResult("Document deleted");
+        return $this->responseService;
     }
 
-    public function export($format, $id)
+    /**
+     * Export document to CSV.
+     *
+     * @param  int  $id
+     * @return App\Services\ResponseService
+     */
+    public function export(string $format, int $id)
     {
         switch (strtolower($format)) {
             case 'csv':
@@ -74,14 +150,17 @@ class DocumentService
         //     ]
         // );
         
+        $this->updateExportedAt($id);
+        
         return response()->streamDownload(function () use ($id) {
-            echo $this->exportDocToCSV($id);
+            echo $this->exportDocToCSV($id); 
         }, 'doc_'.$id.'.csv');
     }
 
     public function exportDocToCSV(int $id)
     {
         $data = $this->show($id);
+        $data = $data->result[0];
 
         $csv_string = '';
         $csv_string .= 'created_at,updated_at'.PHP_EOL;
@@ -92,14 +171,20 @@ class DocumentService
         foreach ($_documents as $_document) {
             $csv_string .= '"'.$_document->key.'","'.$_document->value.'"'.PHP_EOL;
         }
-
         return $csv_string;
+    }
+
+    protected function updateExportedAt(int $id)
+    {
+        $document = Document::findOrFail($id);
+        $document->exported_at = now();
+        $document->save();
     }
 
     public function getAllDocuments()
     {
         return view('index', [
-            'documents' => $this->index()
+            'documents' => Document::all()
         ]);
     }
 }

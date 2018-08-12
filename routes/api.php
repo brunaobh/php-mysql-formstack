@@ -19,8 +19,8 @@ use Illuminate\Http\Request;
 // V1
 Route::group(['prefix' => 'v1/documents', 'namespace' => 'Api\v1'], function () { 
 	Route::get('/', 'DocumentsApiController@index');
-	Route::get('/{id}', 'DocumentsApiController@index@show');
+	Route::get('/{id}', 'DocumentsApiController@show');
 	Route::post('/', 'DocumentsApiController@store');
 	Route::put('/{id}', 'DocumentsApiController@update');
-	Route::delete('/{id}', 'DocumentsApiController@delete');
+	Route::delete('/{id}', 'DocumentsApiController@destroy');
 });

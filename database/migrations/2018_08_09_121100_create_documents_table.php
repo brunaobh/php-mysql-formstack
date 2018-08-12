@@ -15,7 +15,6 @@ class CreateDocumentsTable extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->increments('id');
-            $table->char('title', 100);
             $table->json('document');
             $table->char('link', 100)->nullable();
             $table->dateTime('exported_at')->nullable();

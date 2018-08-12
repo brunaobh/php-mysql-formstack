@@ -26,7 +26,6 @@
               $.ajax({
                 url: 'documents/' + id,
                 type: 'DELETE',
-                data: "name=John&location=Boston",
                 success: function(data) {
                   window.location.href=window.location.href;
                 }
@@ -176,7 +175,7 @@
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link active" href="#">
+                <a class="nav-link active" href="{{ url('documents') }}">
                   <span data-feather="home"></span>
                   My documents <span class="sr-only">(current)</span>
                 </a>
@@ -199,7 +198,7 @@
             <table class="table table-striped table-sm">
               <thead>
                 <tr>
-                  <th>Title</th>
+                  <th>ID</th>
                   <th>Created at</th>
                   <th>Updatet at</th>
                   <th>Exported at</th>
@@ -209,7 +208,7 @@
               <tbody>
                 @foreach ($documents as $document)
                   <tr>
-                    <td>{{ $document->title }}</td>
+                    <td>#{{ $document->id }}</td>
                     <td>{{ $document->created_at }}</td>
                     <td>{{ $document->updated_at }}</td>
                     <td>{{ $document->exported_at }}</td>
