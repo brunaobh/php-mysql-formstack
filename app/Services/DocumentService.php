@@ -5,12 +5,14 @@ namespace App\Services;
 use App\Document;
 use App\Services\ResponseService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\JsonResponse;
 
 class DocumentService
 {
     /**
      * Response service 
-     * @var pp\Services\ResponseService
+     * @var App\Services\ResponseService
      */
     protected $responseService;
 
@@ -125,31 +127,19 @@ class DocumentService
                 break;
             
             default:
-                throw new Exception("Export format undefined");
+                $this->responseService->addMessage("Export format undefined");
+                return $this->responseService;
                 break;
         }
     }
 
-    public function exportAndDownloadDocToCSV($id)
-    {
-        // return new \StreamedResponse(
-        //     function () use ($data) {
-        //         // A resource pointer to the output stream for writing the CSV to
-        //         $handle = fopen('php://output', 'w');
-        //         foreach ($data as $row) {
-        //             // Loop through the data and write each entry as a new row in the csv
-        //             fputcsv($handle, $row);
-        //         }
-
-        //         fclose($handle);
-        //     },
-        //     200,
-        //     [
-        //         'Content-type'        => 'text/csv',
-        //         'Content-Disposition' => 'attachment; filename=members.csv'
-        //     ]
-        // );
-        
+    /**
+     * Export document to a csv file and download it
+     * @param  int    $id Document id
+     * @return object     Streaming response
+     */
+    public function exportAndDownloadDocToCSV(int $id)
+    {        
         $this->updateExportedAt($id);
         
         return response()->streamDownload(function () use ($id) {
@@ -157,6 +147,36 @@ class DocumentService
         }, 'doc_'.$id.'.csv');
     }
 
+    /**
+     * Export document to cloud storage
+     * @param  int    $id Document id
+     * @return Illuminate\Http\JsonResponse
+     */
+    public function exportDocToCloud(int $id) : JsonResponse
+    {
+        $contents = $this->exportDocToCSV($id);
+        $filename = 'doc_'.$id.'.csv';
+
+        if (Storage::disk('s3')->put($filename, $contents, 'public')) {
+            $this->updateExportedAt($id);
+            $this->responseService->addResult([
+                "url" => Storage::disk('s3')->url($filename)
+            ], 'r');
+            return response()->json($this->responseService);
+        }
+
+        $this->responseService->addMessage('Unable to export file to cloud storage');
+        $this->responseService->setStatus($this->responseService::status_failed);
+        $this->responseService->setCode($this->responseService::code_failed);
+        $this->responseService->addResult(null, 0);
+        return response()->json($this->responseService);
+    }
+
+    /**
+     * Export stored document for download as a comma separated text file
+     * @param  int    $id Document id
+     * @return string     CSV string
+     */
     public function exportDocToCSV(int $id)
     {
         $data = $this->show($id);
@@ -174,6 +194,10 @@ class DocumentService
         return $csv_string;
     }
 
+    /**
+     * Update metadata last exported data
+     * @param  int    $id Document id
+     */
     protected function updateExportedAt(int $id)
     {
         $document = Document::findOrFail($id);
@@ -181,6 +205,10 @@ class DocumentService
         $document->save();
     }
 
+    /**
+     * Return laravel view for index route
+     * @return object View
+     */
     public function getAllDocuments()
     {
         return view('index', [

@@ -12,13 +12,13 @@ class DocumentsApiController extends Controller
 {
     /**
      * Document service 
-     * @var pp\Services\DocumentService
+     * @var App\Services\DocumentService
      */
     protected $documentService;
 
     /**
      * Response service 
-     * @var pp\Services\ResponseService
+     * @var App\Services\ResponseService
      */
     protected $responseService;
 

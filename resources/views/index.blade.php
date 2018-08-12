@@ -15,44 +15,39 @@
     <script type="text/javascript" src="{{ asset('js/app.js') }}"></script>
     <script type="text/javascript">
       function deleteItem(id) {
-          if (confirm("Are you sure?")) {
+        if (confirm("Are you sure?")) {
+          $.ajaxSetup({
+            headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+          });
 
-              $.ajaxSetup({
-                headers: {
-                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-              });
-
-              $.ajax({
-                url: 'documents/' + id,
-                type: 'DELETE',
-                success: function(data) {
-                  window.location.href=window.location.href;
-                }
-              });
-          }
-          return false;
+          $.ajax({
+            url: 'documents/' + id,
+            type: 'DELETE',
+            success: function(data) {
+              window.location.href=window.location.href;
+            }
+          });
+        }
+        return false;
       }
 
       function exportDoc(id, type = 'csv') {
-          if (confirm("Are you sure?")) {
-
-              $.ajaxSetup({
-                headers: {
-                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-              });
-
-              $.ajax({
-                url: 'documents/' + id,
-                type: 'GET',
-                data: "format=csv",
-                success: function(data) {
-                  alert('asd');
-                }
-              });
+        $.ajaxSetup({
+          headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
           }
-          return false;
+        });
+
+        $.ajax({
+          url: 'documents/' + id,
+          type: 'GET',
+          data: "format=cloud",
+          success: function(data) {
+            alert("URL to download file: " + data.result[0].url);
+          }
+        });
       }
     </script>
 
@@ -216,7 +211,8 @@
                       <a class="btn btn-sm btn-outline-secondary" href="{{ url('documents/'.$document->id.'/edit') }}"'>Edit</a> 
                       <a class="btn btn-sm btn-outline-secondary" onclick='deleteItem({{ $document->id }})'>Delete</a> 
                       <a class="btn btn-sm btn-outline-secondary" href="{{ url('documents/'.$document->id.'?format=csv') }}"'>Export to CSV</a> 
-                      <a class="btn btn-sm btn-outline-secondary" href="{{ url('documents/'.$document->id.'?format=cloud') }}"'>Export to cloud</a>  
+                      <a class="btn btn-sm btn-outline-secondary" onclick='exportDoc({{ $document->id }})'>Export to cloud</a> 
+                      <!-- <a class="btn btn-sm btn-outline-secondary" href="{{ url('documents/'.$document->id.'?format=cloud') }}"'></a>   -->
                     </td>
                   </tr>
                 @endforeach

@@ -35,12 +35,16 @@ class ResponseService
      */
     public $result = array();
 
-    /**
+    /***
      * Add result to response
-     * @param String|Object $item Result
+     * @param string|object $item Result
+     * @param string $mode Type of access
      */
-    public function addResult($item)
+    public function addResult($item, string $mode = 'a')
     {
+        if ($mode === 'r') {
+            $this->result = [];   
+        }
         array_push($this->result, $item);        
     }
 
